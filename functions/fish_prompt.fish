@@ -37,12 +37,17 @@ function fish_prompt --description 'Write out the prompt'
         set git_info "(git$git_status$git_branch"(set_color white)")"
     end
 
+    set -l pyenv_info (pyenv version-name | string split ':')
+    if [ $pyenv_info = 'system' ]
+        set pyenv_info ''
+    end
+
     # Disable PWD shortening by default.
     set -q fish_prompt_pwd_dir_length
     or set -lx fish_prompt_pwd_dir_length 0
 
     set_color -b black
-    printf '%s%s%s%s%s%s%s%s%s%s%s%s%s' (set_color -o white) '❰' (set_color green) $USER (set_color white) '❙' (set_color yellow) (prompt_pwd) (set_color white) $git_info (set_color white) '❱' (set_color white)
+    printf '%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s' (date +%H:%M) ' ' (set_color -o white) '❰'(set_color white) ':' (set_color purple) $pyenv_info (set_color white) '❙' (set_color yellow) (prompt_pwd) (set_color white) $git_info (set_color white) '❱' (set_color white)
     if test $laststatus -eq 0
         printf "%s✔%s≻%s " (set_color -o green) (set_color white) (set_color normal)
     else
