@@ -1,2 +1,5 @@
 .claude/
 *.copy
+
+.claude/read_cache.json
+.claude/read_cache.session.json
