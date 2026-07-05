@@ -22,6 +22,7 @@ set -gx ZPATH_REKORDBOX_XML /Users/zachvp/Library/CloudStorage/OneDrive-Personal
 export DISPLAY=:0
 
 # paths
+fish_add_path $HOME/.local/bin
 fish_add_path /Users/zachvp/developer/flutter/bin
 fish_add_path /opt/homebrew/opt/ruby/bin
 fish_add_path /opt/homebrew/lib/ruby/gems/3.3.0/bin
