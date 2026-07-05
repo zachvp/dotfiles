@@ -1,3 +1,17 @@
+function __claude_ide_plugin_json --description 'build enabledPlugins JSON enabling only the given plugin from the known set'
+    set -l target $argv[1]
+    set -l plugins pyright-lsp clangd-lsp rust-analyzer-lsp
+    set -l parts
+    for p in $plugins
+        if test "$p" = "$target"
+            set -a parts "\"$p@claude-plugins-official\":true"
+        else
+            set -a parts "\"$p@claude-plugins-official\":false"
+        end
+    end
+    echo "{\"enabledPlugins\":{"(string join , $parts)"}}"
+end
+
 function __claude_ide_detect --description 'print py/rust/cpp based on cwd markers, or nothing if undetected'
     if test -f Cargo.toml
         echo rust
@@ -52,11 +66,11 @@ function claude --description 'claude, with an "ide" subcommand for scoped-plugi
                 end
                 return 0
             case py python
-                command claude --settings '{"enabledPlugins":{"pyright-lsp@claude-plugins-official":true,"clangd-lsp@claude-plugins-official":false,"rust-analyzer-lsp@claude-plugins-official":false}}' $rest
+                command claude --settings (__claude_ide_plugin_json pyright-lsp) $rest
             case rust
-                command claude --settings '{"enabledPlugins":{"rust-analyzer-lsp@claude-plugins-official":true,"clangd-lsp@claude-plugins-official":false,"pyright-lsp@claude-plugins-official":false}}' $rest
+                command claude --settings (__claude_ide_plugin_json rust-analyzer-lsp) $rest
             case cpp c
-                command claude --settings '{"enabledPlugins":{"clangd-lsp@claude-plugins-official":true,"pyright-lsp@claude-plugins-official":false,"rust-analyzer-lsp@claude-plugins-official":false}}' $rest
+                command claude --settings (__claude_ide_plugin_json clangd-lsp) $rest
             case auto
                 if contains -- -h $rest; or contains -- --help $rest
                     set -l detected (__claude_ide_detect)
