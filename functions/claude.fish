@@ -42,7 +42,8 @@ function __claude_ide_help --description 'print only the claude-ide extension he
     echo "  py, python  only pyright-lsp enabled"
     echo "  rust        only rust-analyzer-lsp enabled"
     echo "  cpp, c      only clangd-lsp enabled"
-    echo "  auto        detect py/rust/cpp from cwd markers (Cargo.toml, pyproject.toml, ...)"
+    echo "  auto        detect py/rust/cpp from cwd markers + launch in safe mode"
+    echo "              (disables CLAUDE.md, skills, hooks, MCP, custom themes/keybindings, etc)"
     echo ""
     echo "any [claude-args...] are forwarded to claude as-is."
     echo "note: native 'claude --bare' only supports ANTHROPIC_API_KEY/apiKeyHelper auth"
@@ -75,9 +76,9 @@ function claude --description 'claude, with an "ide" subcommand for scoped-plugi
                 if contains -- -h $rest; or contains -- --help $rest
                     set -l detected (__claude_ide_detect)
                     if test -z "$detected"
-                        echo "claude ide auto: no py/rust/cpp markers found in "(pwd)", would use plain claude"
+                        echo "claude ide auto: no py/rust/cpp markers found in "(pwd)", would use safe mode"
                     else
-                        echo "claude ide auto: would detect '$detected' in "(pwd)
+                        echo "claude ide auto: would detect '$detected' in "(pwd)" (with safe mode)"
                     end
                     echo "(pass -v/--verbose alongside -h/--help to also print vanilla claude --help)"
                     if contains -- -v $rest; or contains -- --verbose $rest
@@ -93,11 +94,11 @@ function claude --description 'claude, with an "ide" subcommand for scoped-plugi
                 contains -- -v $rest; and set quiet 1
                 contains -- --version $rest; and set quiet 1
                 if test -z "$detected"
-                    test $quiet -eq 0; and echo "claude ide auto: no py/rust/cpp markers found in "(pwd)", using default claude" >&2
-                    command claude $rest
+                    test $quiet -eq 0; and echo "claude ide auto: no py/rust/cpp markers found in "(pwd)", launching safe mode" >&2
+                    command claude --safe-mode $rest
                 else
-                    test $quiet -eq 0; and echo "claude ide auto: detected $detected" >&2
-                    claude ide $detected $rest
+                    test $quiet -eq 0; and echo "claude ide auto: detected $detected (safe mode)" >&2
+                    command claude --settings (__claude_ide_plugin_json $detected) --safe-mode $rest
                 end
             case '*'
                 echo "claude ide: unknown mode '$mode' (expected: py, rust, cpp, auto)" >&2
