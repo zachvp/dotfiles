@@ -16,10 +16,12 @@ function fish_prompt --description 'Write out the prompt'
                 set git_status "$git_status"(set_color red)⬇
             end
         end
-        if not command git diff-index --quiet HEAD --
-            for i in (git status --porcelain | string sub -l 2 | sort | uniq)
+        # porcelain lists untracked files too, which diff-index leaves out
+        set -l changes (command git status --porcelain 2>/dev/null | string sub -l 2 | sort -u)
+        if set -q changes[1]
+            for i in $changes
                 switch $i
-                    case "."
+                    case "A*"
                         set git_status "$git_status"(set_color green)✚
                     case " D"
                         set git_status "$git_status"(set_color red)✖
