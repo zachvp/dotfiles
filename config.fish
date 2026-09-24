@@ -1,6 +1,3 @@
-# Added by Antigravity
-# fish_add_path /Users/zachvp/.antigravity/antigravity/bin
-
 # ensure pyenv shims precede homebrew in PATH
 set -gx PYENV_ROOT $HOME/.pyenv
 fish_add_path $PYENV_ROOT/shims
@@ -22,7 +19,6 @@ set -gx ZPATH_REKORDBOX_XML /Users/zachvp/Library/CloudStorage/OneDrive-Personal
 export DISPLAY=:0
 
 # paths
-fish_add_path $HOME/.local/bin
 fish_add_path /Users/zachvp/developer/flutter/bin
 fish_add_path /opt/homebrew/opt/ruby/bin
 fish_add_path /opt/homebrew/lib/ruby/gems/3.3.0/bin
@@ -44,43 +40,31 @@ fish_add_path /Users/zachvp/.opencode/bin
 # Claude Pro billing cycle anchor (Friday 11am EDT = 15:00 UTC); used by cache-stats.sh --window since_epoch
 set -gx CACHE_STATS_EPOCH "2026-06-26T15:00:00Z"
 
-# non-interactive session: bypass fish entirely (tool-driven Bash calls land here).
-# Env/PATH above this line are inherited via exec; anything below is interactive-only.
-# NOTE: this also swallows `fish -c '...'` from non-TTY callers — exec replaces the
-# process before -c's command runs, so it silently no-ops instead of erroring.
-# Use `fish --no-config -c '...'` to actually test fish functions/config non-interactively.
-if not status is-interactive
-    exec bash
+# ~/.local/bin goes last so it lands first in PATH, ahead of Homebrew and the
+# other prepends above; --move reorders it even when the launching env has it.
+fish_add_path --move $HOME/.local/bin
+
+# Everything above runs for every fish, so scripts and `fish -c` get the same
+# env/PATH as a terminal. Claude Code's Bash tool runs bash directly
+# (CLAUDE_CODE_SHELL in ~/.claude/settings.json), so it never lands here.
+# The block below is for interactive shells: it prints, prompts, or costs a
+# subprocess per startup.
+if status is-interactive
+    # direnv (per-directory env vars, e.g. GH_CONFIG_DIR scoping)
+    direnv hook fish | source
+
+    # claude-kit: claude-ide wrapper, generated at each startup from claude-kit's
+    # init.lib.sh, the single source of truth across bash/zsh/fish.
+    set -l claude_ide ~/developer/sol_reason/claude-kit/plugins/claude-kit/bin/claude-ide
+    test -x $claude_ide; and $claude_ide init fish | source
+
+    # ssh: keys load into macOS's launchd-managed agent (com.openssh.ssh-agent),
+    # whose socket launchd exports as SSH_AUTH_SOCK to every login session. One
+    # agent serves all shells, so a shell starts none of its own.
+    ssh-add ~/.ssh/id_rsa >/dev/null 2>&1
+    ssh-add ~/.ssh/id_ed25519 --apple-load-keychain >/dev/null 2>&1
+    ssh-add ~/.ssh/id_ed25519_solreason --apple-load-keychain >/dev/null 2>&1
+
+    # fd limit (due to running music-assistant server tests)
+    ulimit -n 4096
 end
-
-# direnv (per-directory env vars, e.g. GH_CONFIG_DIR scoping)
-direnv hook fish | source
-
-# claude-kit: claude ide wrapper. Regenerated at each startup from claude-kit's
-# init.lib.sh, the single source of truth across bash/zsh/fish — this supersedes
-# the hand-maintained functions/claude.fish, which drifted from it for two months.
-/Users/zachvp/developer/sol_reason/claude-kit/plugins/claude-kit/bin/claude-ide init fish | source
-
-# ssh: keys load into macOS's launchd-managed agent (com.openssh.ssh-agent),
-# whose socket launchd exports as SSH_AUTH_SOCK to every login session. One
-# agent serves all shells, so a shell starts none of its own.
-ssh-add ~/.ssh/id_rsa >/dev/null 2>&1
-ssh-add ~/.ssh/id_ed25519 --apple-load-keychain >/dev/null 2>&1
-ssh-add ~/.ssh/id_ed25519_solreason --apple-load-keychain >/dev/null 2>&1
-
-# nvm
-set -gx NVM_DIR "$HOME/.nvm"
-alias nvm="bass source /opt/homebrew/opt/nvm/nvm.sh --no-use ';' nvm"
-
-# fd limit (due to running music-assistant server tests)
-ulimit -n 4096
-
-# always end on a high note
-true
-
-
-# Added by Antigravity CLI installer
-set -gx PATH "/Users/zachvp/.local/bin" $PATH
-
-# cwd
-cd /Users/zachvp/developer/sol_reason

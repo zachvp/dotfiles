@@ -1,5 +1,0 @@
-# This file contains fish universal variable definitions.
-# VERSION: 3.0
-SETUVAR --export PYENV_ROOT:/Users/zachvp/\x2epyenv
-SETUVAR __fish_initialized:4300
-SETUVAR fish_user_paths:/Users/zachvp/\x2edotnet/tools\x1e/Users/zachvp/go/bin\x1e/opt/homebrew/lib/ruby/gems/3\x2e3\x2e0/bin\x1e/opt/homebrew/opt/ruby/bin\x1e/Users/zachvp/developer/flutter/bin\x1e/Users/zachvp/developer/flutter\x1e/Users/zachvp/\x2epyenv/versions\x1e/opt/homebrew/bin
