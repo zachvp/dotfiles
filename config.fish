@@ -27,6 +27,7 @@ fish_add_path /Users/zachvp/developer/flutter/bin
 fish_add_path /opt/homebrew/opt/ruby/bin
 fish_add_path /opt/homebrew/lib/ruby/gems/3.3.0/bin
 fish_add_path /opt/homebrew/opt/grep/libexec/gnubin
+fish_add_path ~/Library/Android/sdk/platform-tools
 
 # golang versions
 fish_add_path /Users/zachvp/go/bin/
@@ -52,10 +53,20 @@ if not status is-interactive
     exec bash
 end
 
-# ssh+agent
-eval (ssh-agent -c > /dev/null)
+# direnv (per-directory env vars, e.g. GH_CONFIG_DIR scoping)
+direnv hook fish | source
+
+# claude-kit: claude ide wrapper. Regenerated at each startup from claude-kit's
+# init.lib.sh, the single source of truth across bash/zsh/fish — this supersedes
+# the hand-maintained functions/claude.fish, which drifted from it for two months.
+/Users/zachvp/developer/sol_reason/claude-kit/plugins/claude-kit/bin/claude-ide init fish | source
+
+# ssh: keys load into macOS's launchd-managed agent (com.openssh.ssh-agent),
+# whose socket launchd exports as SSH_AUTH_SOCK to every login session. One
+# agent serves all shells, so a shell starts none of its own.
 ssh-add ~/.ssh/id_rsa >/dev/null 2>&1
 ssh-add ~/.ssh/id_ed25519 --apple-load-keychain >/dev/null 2>&1
+ssh-add ~/.ssh/id_ed25519_solreason --apple-load-keychain >/dev/null 2>&1
 
 # nvm
 set -gx NVM_DIR "$HOME/.nvm"
@@ -66,3 +77,10 @@ ulimit -n 4096
 
 # always end on a high note
 true
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/Users/zachvp/.local/bin" $PATH
+
+# cwd
+cd /Users/zachvp/developer/sol_reason
