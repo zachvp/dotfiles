@@ -4,3 +4,5 @@
 .claude/read_cache.json
 .claude/read_cache.session.json
 fish_variables
+.netrwhist
+.DS_Store
