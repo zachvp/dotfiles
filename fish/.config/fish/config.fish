@@ -33,9 +33,4 @@ fish_add_path -g --move ~/.local/bin
 if status is-interactive
     # direnv (per-directory env vars, e.g. GH_CONFIG_DIR scoping)
     command -q direnv; and direnv hook fish | source
-
-    # claude-kit: claude-ide wrapper, generated at each startup from claude-kit's
-    # init.lib.sh, the single source of truth across bash/zsh/fish.
-    set -l claude_ide ~/developer/sol_reason/claude-kit/plugins/claude-kit/bin/claude-ide
-    test -x $claude_ide; and $claude_ide init fish | source
 end
