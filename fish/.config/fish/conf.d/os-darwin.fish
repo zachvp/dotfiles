@@ -11,6 +11,8 @@ fish_add_path -g /opt/homebrew/lib/ruby/gems/3.3.0/bin
 fish_add_path -g /opt/homebrew/opt/grep/libexec/gnubin
 fish_add_path -g ~/Library/Android/sdk/platform-tools
 fish_add_path -g ~/developer/flutter/bin
+# python.org installer framework build
+fish_add_path -g /Library/Frameworks/Python.framework/Versions/3.13/bin
 
 # browsers
 set -gx CHROMIUM_BINARY "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"

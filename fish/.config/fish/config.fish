@@ -4,7 +4,7 @@
 # fish_add_path -g keeps PATH defined by these files; the universal
 # fish_user_paths (stored per machine in fish_variables) stays empty.
 
-# pyenv shims precede Homebrew in PATH
+# pyenv shims precede the conf.d/os-*.fish paths in PATH
 set -gx PYENV_ROOT $HOME/.pyenv
 if command -q pyenv
     fish_add_path -g $PYENV_ROOT/shims
@@ -20,8 +20,9 @@ fish_add_path -g ~/.opencode/bin
 # Claude Pro billing cycle anchor (Friday 11am EDT = 15:00 UTC); used by cache-stats.sh --window since_epoch
 set -gx CACHE_STATS_EPOCH "2026-06-26T15:00:00Z"
 
-# ~/.local/bin goes last so it lands first in PATH, ahead of Homebrew and the
-# other prepends above; --move reorders it even when the launching env has it.
+# ~/.local/bin goes last so it lands first in PATH, ahead of the conf.d/os-*.fish
+# paths and the other prepends above; --move reorders it even when the launching
+# env has it.
 fish_add_path -g --move ~/.local/bin
 
 # Everything above runs for every fish, so scripts and `fish -c` get the same
