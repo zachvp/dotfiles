@@ -4,12 +4,15 @@ Shell and editor config shared across machines, laid out as
 [GNU Stow](https://www.gnu.org/software/stow/) packages. Each top-level
 directory mirrors `$HOME`, and `stow <package>` symlinks it into place.
 
-| Package | Links |
-|---|---|
-| `fish` | `~/.config/fish` |
-| `vim`  | `~/.vimrc`, `~/.vim` (Pathogen; plugins in `bundle/` as git submodules) |
+| Package | Links                                                                   |
+|---------|-------------------------------------------------------------------------|
+| `fish`  | `~/.config/fish`                                                        |
+| `vim`   | `~/.vimrc`, `~/.vim` (Pathogen; plugins in `bundle/` as git submodules) |
 
 ## Setup on a new machine
+
+`stow` refuses to overwrite real files, so move any existing `~/.config/fish`,
+`~/.vimrc`, or `~/.vim` aside first.
 
 ```sh
 # Debian / Ubuntu / Armbian
@@ -26,9 +29,6 @@ stow fish vim
 command -v fish | sudo tee -a /etc/shells
 chsh -s "$(command -v fish)"
 ```
-
-`stow` refuses to overwrite real files, so move any existing `~/.config/fish`,
-`~/.vimrc`, or `~/.vim` aside first.
 
 ## How the fish config is organized
 
